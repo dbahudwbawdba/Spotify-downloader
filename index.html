@@ -3,139 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SoundVault</title>
+<title>SoundVault Pro</title>
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:#0b0f0c;
-  color:white;
-  height:100vh;
-  display:flex;
-}
+body{margin:0;font-family:Inter;background:#0b0f0c;color:white}
 
-/* SIDEBAR */
-.sidebar{
-  width:280px;
-  background:#0f1712;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  border-right:1px solid rgba(255,255,255,0.05);
-}
+.app{display:flex;height:100vh}
 
-.logo{
-  font-size:20px;
-  font-weight:700;
-  margin-bottom:20px;
-}
+.sidebar{width:260px;background:#0f1712;padding:20px;display:flex;flex-direction:column}
+.logo{font-weight:700;font-size:20px;margin-bottom:20px}
 
-.tab{
-  padding:12px 14px;
-  border-radius:10px;
-  margin-bottom:8px;
-  background:rgba(255,255,255,0.04);
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-}
+.folder{padding:10px;border-radius:8px;margin-bottom:6px;background:#1a241d;cursor:pointer}
+.folder.active{background:#1db954}
 
-.tab.active{background:#1db954}
+.add{margin-top:auto;padding:10px;background:#1db954;border-radius:8px;text-align:center;cursor:pointer}
 
-.tab input{
-  background:none;
-  border:none;
-  color:white;
-  width:100%;
-}
+.main{flex:1;padding:40px}
 
-.add{
-  margin-top:auto;
-  padding:12px;
-  border-radius:10px;
-  background:#1db954;
-  text-align:center;
-  cursor:pointer;
-}
+.card{background:#121a14;padding:25px;border-radius:15px}
 
-/* MAIN */
-.main{
-  flex:1;
-  padding:40px;
-  overflow:auto;
-}
+textarea{width:100%;height:120px;margin-top:10px;border-radius:10px;padding:10px;border:none}
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.header h1{
-  font-size:36px;
-}
-
-.card{
-  margin-top:20px;
-  background:#121a14;
-  border-radius:20px;
-  padding:25px;
-  border:1px solid rgba(255,255,255,0.05);
-}
-
-textarea{
-  width:100%;
-  height:140px;
-  border-radius:12px;
-  border:none;
-  padding:15px;
-  font-size:15px;
-  margin-top:10px;
-}
-
-.row{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-button{
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-}
-
+.row{display:flex;gap:10px;margin-top:15px}
+button{flex:1;padding:12px;border:none;border-radius:8px;cursor:pointer}
 .primary{background:#1db954;color:white}
-.secondary{background:#222;color:white}
+.secondary{background:#2a2a2a;color:white}
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:15px;
-  margin-top:20px;
+.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.item{background:#18231c;padding:10px;border-radius:10px}
+.item a{display:block;margin-top:8px;background:white;color:black;text-align:center;padding:6px;border-radius:6px;text-decoration:none}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
 }
 
-.song{
-  background:#141d16;
-  padding:15px;
-  border-radius:12px;
-  font-size:14px;
+.modal-box{
+  background:#121a14;
+  padding:25px;
+  border-radius:15px;
+  width:300px;
 }
 
-.song a{
-  display:block;
-  margin-top:10px;
-  background:white;
-  color:black;
-  padding:8px;
-  border-radius:8px;
-  text-align:center;
-  text-decoration:none;
+.modal select, .modal input{
+  width:100%;margin-top:10px;padding:10px;border-radius:8px;border:none
 }
 
 </style>
@@ -143,117 +61,151 @@ button{
 
 <body>
 
+<div class="app">
+
 <div class="sidebar">
   <div class="logo">🎧 SoundVault</div>
-  <div id="tabs"></div>
-  <div class="add" onclick="newTab()">+ Nieuwe map</div>
+  <div id="folders"></div>
+  <div class="add" onclick="openFolderModal()">+ Nieuwe map</div>
 </div>
 
 <div class="main">
-
-  <div class="header">
-    <h1 id="title">Dashboard</h1>
-  </div>
+  <h1 id="title"></h1>
 
   <div class="card">
-    <label>Spotify link / code</label>
+    <label>Spotify link</label>
     <textarea id="input"></textarea>
 
     <div class="row">
-      <button class="primary" onclick="convert()">Convert</button>
-      <button class="secondary" onclick="save()">Opslaan</button>
+      <button class="primary" onclick="openConvertModal()">Convert</button>
     </div>
   </div>
 
-  <div class="grid" id="library"></div>
+  <div class="grid" id="list"></div>
+</div>
 
 </div>
 
+<!-- CREATE FOLDER MODAL -->
+<div class="modal" id="folderModal">
+  <div class="modal-box">
+    <h3>Nieuwe map</h3>
+    <input id="folderName" placeholder="Naam...">
+    <div class="row">
+      <button onclick="createFolder()">Maak</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONVERT MODAL -->
+<div class="modal" id="convertModal">
+  <div class="modal-box">
+    <h3>Download opties</h3>
+
+    <select id="format">
+      <option value="mp3">MP3</option>
+      <option value="mp4">MP4</option>
+    </select>
+
+    <select id="targetFolder"></select>
+
+    <div class="row">
+      <button class="primary" onclick="doConvert()">Download</button>
+      <button class="secondary" onclick="closeModals()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
-let tabs = JSON.parse(localStorage.getItem('vault_tabs')||'[]');
+let folders = JSON.parse(localStorage.getItem('sv_folders')||'[]');
 let current = 0;
 
-function renderTabs(){
-  const el=document.getElementById('tabs');
-  el.innerHTML='';
+function save(){localStorage.setItem('sv_folders',JSON.stringify(folders))}
 
-  tabs.forEach((t,i)=>{
-    const div=document.createElement('div');
-    div.className='tab'+(i===current?' active':'');
+function render(){
+  const f=document.getElementById('folders');
+  f.innerHTML='';
 
-    const input=document.createElement('input');
-    input.value=t.name;
-    input.onchange=(e)=>{t.name=e.target.value;saveData();}
-
-    div.onclick=()=>switchTab(i);
-    div.appendChild(input);
-
-    el.appendChild(div);
+  folders.forEach((x,i)=>{
+    const d=document.createElement('div');
+    d.className='folder'+(i===current?' active':'');
+    d.innerText=x.name;
+    d.onclick=()=>{current=i;render();load()};
+    f.appendChild(d);
   });
-}
 
-function newTab(){
-  const name=prompt('Naam van map:');
-  if(!name) return;
-  tabs.push({name,items:[],value:''});
-  current=tabs.length-1;
-  saveData();
-  renderTabs();
   load();
-}
-
-function switchTab(i){
-  current=i;
-  load();
-  renderTabs();
 }
 
 function load(){
-  document.getElementById('title').innerText=tabs[current].name;
-  document.getElementById('input').value=tabs[current].value||'';
-  renderLibrary();
-}
+  if(!folders[current]) return;
+  document.getElementById('title').innerText=folders[current].name;
 
-function save(){
-  tabs[current].value=document.getElementById('input').value;
-  saveData();
-  alert('Saved');
-}
+  const list=document.getElementById('list');
+  list.innerHTML='';
 
-function convert(){
-  const val=document.getElementById('input').value;
-  if(!val) return alert('geen input');
-
-  const fake={
-    name:'Track '+(tabs[current].items.length+1),
-    url:'https://example.com/song.mp3'
-  };
-
-  tabs[current].items.push(fake);
-  saveData();
-  renderLibrary();
-}
-
-function renderLibrary(){
-  const lib=document.getElementById('library');
-  lib.innerHTML='';
-
-  tabs[current].items.forEach(s=>{
+  folders[current].items.forEach(it=>{
     const div=document.createElement('div');
-    div.className='song';
-    div.innerHTML=`
-      <b>${s.name}</b>
-      <a href="${s.url}" download>Download</a>
-    `;
-    lib.appendChild(div);
+    div.className='item';
+    div.innerHTML=`${it.name}<a href="${it.url}" download>Download ${it.type}</a>`;
+    list.appendChild(div);
   });
 }
 
-function saveData(){
-  localStorage.setItem('vault_tabs',JSON.stringify(tabs));
+function openFolderModal(){
+  document.getElementById('folderModal').style.display='flex';
 }
 
-if(tabs.length===0) newTab(); else {renderTabs();load();}
+function createFolder(){
+  const name=document.getElementById('folderName').value;
+  if(!name) return;
+  folders.push({name,items:[]});
+  current=folders.length-1;
+  save();
+  closeModals();
+  render();
+}
+
+function openConvertModal(){
+  const select=document.getElementById('targetFolder');
+  select.innerHTML='';
+
+  folders.forEach((f,i)=>{
+    const o=document.createElement('option');
+    o.value=i;
+    o.textContent=f.name;
+    select.appendChild(o);
+  });
+
+  document.getElementById('convertModal').style.display='flex';
+}
+
+function doConvert(){
+  const input=document.getElementById('input').value;
+  if(!input) return alert('geen link');
+
+  const format=document.getElementById('format').value;
+  const folderIndex=document.getElementById('targetFolder').value;
+
+  const fakeUrl='https://example.com/file.'+format;
+
+  folders[folderIndex].items.push({
+    name:'Track '+(folders[folderIndex].items.length+1),
+    url:fakeUrl,
+    type:format
+  });
+
+  save();
+  closeModals();
+  render();
+}
+
+function closeModals(){
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+}
+
+if(folders.length===0){folders.push({name:'Mijn muziek',items:[]});save()}
+render();
 </script>
 
 </body>
