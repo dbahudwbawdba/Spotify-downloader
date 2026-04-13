@@ -1,233 +1,259 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GiftHub Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundVault</title>
 
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, sans-serif;
-      background: radial-gradient(circle at top, #1db954, #0b0b0b);
-      color: white;
-      height: 100vh;
-      overflow: hidden;
-    }
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  background:#0b0f0c;
+  color:white;
+  height:100vh;
+  display:flex;
+}
 
-    .app {
-      display: flex;
-      height: 100vh;
-    }
+/* SIDEBAR */
+.sidebar{
+  width:280px;
+  background:#0f1712;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid rgba(255,255,255,0.05);
+}
 
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(20px);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+.logo{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:20px;
+}
 
-    .sidebar h2 {
-      margin-bottom: 10px;
-    }
+.tab{
+  padding:12px 14px;
+  border-radius:10px;
+  margin-bottom:8px;
+  background:rgba(255,255,255,0.04);
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+}
 
-    .tab {
-      padding: 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      background: rgba(255,255,255,0.05);
-      transition: 0.2s;
-    }
+.tab.active{background:#1db954}
 
-    .tab:hover, .tab.active {
-      background: #1db954;
-    }
+.tab input{
+  background:none;
+  border:none;
+  color:white;
+  width:100%;
+}
 
-    .add-tab {
-      margin-top: auto;
-      padding: 12px;
-      border-radius: 10px;
-      background: white;
-      color: black;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.add{
+  margin-top:auto;
+  padding:12px;
+  border-radius:10px;
+  background:#1db954;
+  text-align:center;
+  cursor:pointer;
+}
 
-    /* Main */
-    .main {
-      flex: 1;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+/* MAIN */
+.main{
+  flex:1;
+  padding:40px;
+  overflow:auto;
+}
 
-    .card {
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    h1 {
-      font-size: 40px;
-      margin: 0;
-    }
+.header h1{
+  font-size:36px;
+}
 
-    textarea {
-      width: 100%;
-      height: 150px;
-      border-radius: 15px;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      margin-top: 10px;
-    }
+.card{
+  margin-top:20px;
+  background:#121a14;
+  border-radius:20px;
+  padding:25px;
+  border:1px solid rgba(255,255,255,0.05);
+}
 
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
+textarea{
+  width:100%;
+  height:140px;
+  border-radius:12px;
+  border:none;
+  padding:15px;
+  font-size:15px;
+  margin-top:10px;
+}
 
-    button {
-      flex: 1;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
 
-    .primary {
-      background: #1db954;
-      color: white;
-    }
+button{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
 
-    .secondary {
-      background: white;
-      color: black;
-    }
+.primary{background:#1db954;color:white}
+.secondary{background:#222;color:white}
 
-    button:hover { transform: scale(1.05); }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
 
-    .result {
-      margin-top: 20px;
-    }
+.song{
+  background:#141d16;
+  padding:15px;
+  border-radius:12px;
+  font-size:14px;
+}
 
-    a.download {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 12px 18px;
-      background: white;
-      color: black;
-      border-radius: 10px;
-      text-decoration: none;
-    }
+.song a{
+  display:block;
+  margin-top:10px;
+  background:white;
+  color:black;
+  padding:8px;
+  border-radius:8px;
+  text-align:center;
+  text-decoration:none;
+}
 
-  </style>
+</style>
 </head>
+
 <body>
 
-<div class="app">
+<div class="sidebar">
+  <div class="logo">🎧 SoundVault</div>
+  <div id="tabs"></div>
+  <div class="add" onclick="newTab()">+ Nieuwe map</div>
+</div>
 
-  <div class="sidebar">
-    <h2>🎁 GiftHub</h2>
-    <div id="tabs"></div>
-    <div class="add-tab" onclick="addTab()">+ Nieuw tabblad</div>
+<div class="main">
+
+  <div class="header">
+    <h1 id="title">Dashboard</h1>
   </div>
 
-  <div class="main">
-    <h1 id="title">Spotify Tool</h1>
+  <div class="card">
+    <label>Spotify link / code</label>
+    <textarea id="input"></textarea>
 
-    <div class="card">
-      <label>Spotify link / code</label>
-      <textarea id="input"></textarea>
-
-      <div class="buttons">
-        <button class="primary" onclick="convert()">Convert</button>
-        <button class="secondary" onclick="save()">Opslaan</button>
-      </div>
-
-      <div class="result" id="result"></div>
+    <div class="row">
+      <button class="primary" onclick="convert()">Convert</button>
+      <button class="secondary" onclick="save()">Opslaan</button>
     </div>
   </div>
+
+  <div class="grid" id="library"></div>
 
 </div>
 
 <script>
-  let tabs = JSON.parse(localStorage.getItem('tabs') || '[]');
-  let currentTab = 0;
+let tabs = JSON.parse(localStorage.getItem('vault_tabs')||'[]');
+let current = 0;
 
-  function renderTabs() {
-    const container = document.getElementById('tabs');
-    container.innerHTML = '';
+function renderTabs(){
+  const el=document.getElementById('tabs');
+  el.innerHTML='';
 
-    tabs.forEach((tab, i) => {
-      const el = document.createElement('div');
-      el.className = 'tab' + (i === currentTab ? ' active' : '');
-      el.innerText = tab.name || 'Tab ' + (i+1);
-      el.onclick = () => switchTab(i);
-      container.appendChild(el);
-    });
-  }
+  tabs.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='tab'+(i===current?' active':'');
 
-  function switchTab(i) {
-    currentTab = i;
-    document.getElementById('input').value = tabs[i].value || '';
-    renderTabs();
-  }
+    const input=document.createElement('input');
+    input.value=t.name;
+    input.onchange=(e)=>{t.name=e.target.value;saveData();}
 
-  function addTab() {
-    tabs.push({ name: 'Tab ' + (tabs.length+1), value: '' });
-    currentTab = tabs.length - 1;
-    saveStorage();
-    renderTabs();
-    switchTab(currentTab);
-  }
+    div.onclick=()=>switchTab(i);
+    div.appendChild(input);
 
-  function save() {
-    if (!tabs[currentTab]) return;
-    tabs[currentTab].value = document.getElementById('input').value;
-    saveStorage();
-    alert('Opgeslagen ✅');
-  }
+    el.appendChild(div);
+  });
+}
 
-  function saveStorage() {
-    localStorage.setItem('tabs', JSON.stringify(tabs));
-  }
-
-  function convert() {
-    const input = document.getElementById('input').value;
-    const result = document.getElementById('result');
-
-    if (!input) {
-      result.innerHTML = '⚠️ Vul iets in';
-      return;
-    }
-
-    // PLACE BACKEND HERE
-    const fakeMp3 = 'https://example.com/song.mp3';
-
-    result.innerHTML = `
-      <p>✅ Klaar</p>
-      <a class="download" href="${fakeMp3}" download>Download MP3</a>
-    `;
-  }
-
-  // init
-  if (tabs.length === 0) addTab();
-  else switchTab(0);
-
+function newTab(){
+  const name=prompt('Naam van map:');
+  if(!name) return;
+  tabs.push({name,items:[],value:''});
+  current=tabs.length-1;
+  saveData();
   renderTabs();
+  load();
+}
+
+function switchTab(i){
+  current=i;
+  load();
+  renderTabs();
+}
+
+function load(){
+  document.getElementById('title').innerText=tabs[current].name;
+  document.getElementById('input').value=tabs[current].value||'';
+  renderLibrary();
+}
+
+function save(){
+  tabs[current].value=document.getElementById('input').value;
+  saveData();
+  alert('Saved');
+}
+
+function convert(){
+  const val=document.getElementById('input').value;
+  if(!val) return alert('geen input');
+
+  const fake={
+    name:'Track '+(tabs[current].items.length+1),
+    url:'https://example.com/song.mp3'
+  };
+
+  tabs[current].items.push(fake);
+  saveData();
+  renderLibrary();
+}
+
+function renderLibrary(){
+  const lib=document.getElementById('library');
+  lib.innerHTML='';
+
+  tabs[current].items.forEach(s=>{
+    const div=document.createElement('div');
+    div.className='song';
+    div.innerHTML=`
+      <b>${s.name}</b>
+      <a href="${s.url}" download>Download</a>
+    `;
+    lib.appendChild(div);
+  });
+}
+
+function saveData(){
+  localStorage.setItem('vault_tabs',JSON.stringify(tabs));
+}
+
+if(tabs.length===0) newTab(); else {renderTabs();load();}
 </script>
 
 </body>
