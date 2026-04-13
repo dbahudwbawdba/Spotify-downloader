@@ -1,212 +1,310 @@
+
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SoundVault Pro</title>
-
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter;background:#0b0f0c;color:white}
-
-.app{display:flex;height:100vh}
-
-.sidebar{width:260px;background:#0f1712;padding:20px;display:flex;flex-direction:column}
-.logo{font-weight:700;font-size:20px;margin-bottom:20px}
-
-.folder{padding:10px;border-radius:8px;margin-bottom:6px;background:#1a241d;cursor:pointer}
-.folder.active{background:#1db954}
-
-.add{margin-top:auto;padding:10px;background:#1db954;border-radius:8px;text-align:center;cursor:pointer}
-
-.main{flex:1;padding:40px}
-
-.card{background:#121a14;padding:25px;border-radius:15px}
-
-textarea{width:100%;height:120px;margin-top:10px;border-radius:10px;padding:10px;border:none}
-
-.row{display:flex;gap:10px;margin-top:15px}
-button{flex:1;padding:12px;border:none;border-radius:8px;cursor:pointer}
-.primary{background:#1db954;color:white}
-.secondary{background:#2a2a2a;color:white}
-
-.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.item{background:#18231c;padding:10px;border-radius:10px}
-.item a{display:block;margin-top:8px;background:white;color:black;text-align:center;padding:6px;border-radius:6px;text-decoration:none}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background:rgba(0,0,0,0.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.modal-box{
-  background:#121a14;
-  padding:25px;
-  border-radius:15px;
-  width:300px;
-}
-
-.modal select, .modal input{
-  width:100%;margin-top:10px;padding:10px;border-radius:8px;border:none
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Web Player</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fab fa-spotify"></i>
+                    <span>Spotify Player</span>
+                </div>
+            </div>
 
-<div class="app">
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3 class="nav-section-title">Menu</h3>
+                    <ul class="nav-list">
+                        <li><a href="#" class="nav-item active" data-section="home"><i class="fas fa-home"></i><span>Home</span></a></li>
+                        <li><a href="#" class="nav-item" data-section="search"><i class="fas fa-search"></i><span>Search</span></a></li>
+                        <li><a href="#" class="nav-item" data-section="playlists"><i class="fas fa-list"></i><span>Playlists</span></a></li>
+                        <li><a href="#" class="nav-item" data-section="liked"><i class="fas fa-heart"></i><span>Liked Songs</span></a></li>
+                        <li><a href="#" class="nav-item" data-section="recommendations"><i class="fas fa-star"></i><span>Recommendations</span></a></li>
+                    </ul>
+                </div>
 
-<div class="sidebar">
-  <div class="logo">🎧 SoundVault</div>
-  <div id="folders"></div>
-  <div class="add" onclick="openFolderModal()">+ Nieuwe map</div>
-</div>
+                <div class="nav-section">
+                    <h3 class="nav-section-title">Your Playlists</h3>
+                    <ul class="nav-list" id="playlist-nav">
+                        <li><a href="#" class="nav-item" data-playlist="create"><i class="fas fa-plus-circle"></i><span>New Playlist</span></a></li>
+                    </ul>
+                </div>
+            </nav>
 
-<div class="main">
-  <h1 id="title"></h1>
+            <div class="sidebar-footer">
+                <button class="btn-settings"><i class="fas fa-cog"></i> Settings</button>
+                <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
 
-  <div class="card">
-    <label>Spotify link</label>
-    <textarea id="input"></textarea>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <input type="text" class="search-input" placeholder="Search songs, artists..." id="global-search">
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <img id="profile-image" src="https://via.placeholder.com/40" alt="Profile" class="profile-avatar">
+                        <span id="profile-name">User</span>
+                    </div>
+                </div>
+            </header>
 
-    <div class="row">
-      <button class="primary" onclick="openConvertModal()">Convert</button>
+            <!-- Content Sections -->
+            <div class="content-area">
+                <!-- Home Section -->
+                <section id="home-section" class="content-section active">
+                    <div class="hero-banner">
+                        <h1>Welcome to Spotify Player</h1>
+                        <p>Discover, search, and enjoy your favorite music</p>
+                    </div>
+
+                    <div class="section-group">
+                        <h2 class="section-title">Recently Played</h2>
+                        <div class="tracks-grid" id="recently-played">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-group">
+                        <h2 class="section-title">New Releases</h2>
+                        <div class="tracks-grid" id="new-releases">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-group">
+                        <h2 class="section-title">Featured Playlists</h2>
+                        <div class="playlists-grid" id="featured-playlists">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Search Section -->
+                <section id="search-section" class="content-section">
+                    <div class="search-container">
+                        <h1>Search Music</h1>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Search tracks, artists, albums...">
+                        </div>
+                    </div>
+
+                    <div class="search-results">
+                        <div class="results-category">
+                            <h3>Tracks</h3>
+                            <div id="search-tracks" class="results-list"></div>
+                        </div>
+
+                        <div class="results-category">
+                            <h3>Artists</h3>
+                            <div id="search-artists" class="results-list"></div>
+                        </div>
+
+                        <div class="results-category">
+                            <h3>Albums</h3>
+                            <div id="search-albums" class="results-list"></div>
+                        </div>
+
+                        <div class="results-category">
+                            <h3>Playlists</h3>
+                            <div id="search-playlists" class="results-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Playlists Section -->
+                <section id="playlists-section" class="content-section">
+                    <div class="playlists-header">
+                        <h1>Your Playlists</h1>
+                        <button class="btn-primary" id="create-playlist-btn">
+                            <i class="fas fa-plus"></i> Create Playlist
+                        </button>
+                    </div>
+
+                    <div class="playlists-container" id="playlists-list">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Loading playlists...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Liked Songs Section -->
+                <section id="liked-section" class="content-section">
+                    <div class="liked-header">
+                        <div class="liked-banner">
+                            <i class="fas fa-heart"></i>
+                            <h1>Liked Songs</h1>
+                        </div>
+                    </div>
+
+                    <div class="liked-controls">
+                        <button class="btn-icon" id="play-liked-btn"><i class="fas fa-play"></i> Play All</button>
+                        <button class="btn-icon" id="shuffle-liked-btn"><i class="fas fa-random"></i> Shuffle</button>
+                    </div>
+
+                    <div class="tracks-list" id="liked-tracks">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Loading liked songs...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendations Section -->
+                <section id="recommendations-section" class="content-section">
+                    <h1>Recommended For You</h1>
+                    <div class="recommendations-controls">
+                        <label for="recommendation-energy">Energy Level:</label>
+                        <input type="range" id="recommendation-energy" min="0" max="1" step="0.1" value="0.5">
+                        <label for="recommendation-danceability">Danceability:</label>
+                        <input type="range" id="recommendation-danceability" min="0" max="1" step="0.1" value="0.5">
+                        <button class="btn-primary" id="get-recommendations-btn">Get Recommendations</button>
+                    </div>
+
+                    <div class="recommendations-grid" id="recommendations">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Loading recommendations...
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-  </div>
 
-  <div class="grid" id="list"></div>
-</div>
+    <!-- Player -->
+    <footer class="player-footer">
+        <div class="player-container">
+            <!-- Track Info -->
+            <div class="player-track-info">
+                <div class="player-album-art">
+                    <img id="player-album-image" src="https://via.placeholder.com/64" alt="Album Art">
+                </div>
+                <div class="player-track-details">
+                    <h4 id="player-track-name">No track playing</h4>
+                    <p id="player-artist-name">Artist</p>
+                </div>
+                <button class="btn-heart" id="player-like-btn"><i class="fas fa-heart"></i></button>
+            </div>
 
-</div>
+            <!-- Player Controls -->
+            <div class="player-controls">
+                <div class="progress-section">
+                    <span class="current-time">0:00</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                        <input type="range" class="progress-slider" min="0" max="100" value="0">
+                    </div>
+                    <span class="total-time">0:00</span>
+                </div>
 
-<!-- CREATE FOLDER MODAL -->
-<div class="modal" id="folderModal">
-  <div class="modal-box">
-    <h3>Nieuwe map</h3>
-    <input id="folderName" placeholder="Naam...">
-    <div class="row">
-      <button onclick="createFolder()">Maak</button>
+                <div class="control-buttons">
+                    <button class="btn-control" id="shuffle-btn" title="Shuffle">
+                        <i class="fas fa-random"></i>
+                    </button>
+                    <button class="btn-control" id="prev-btn" title="Previous">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="btn-control btn-play-large" id="play-btn" title="Play">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn-control" id="next-btn" title="Next">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="btn-control" id="repeat-btn" title="Repeat">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Volume -->
+            <div class="player-volume">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" class="volume-slider" min="0" max="100" value="70">
+                <span class="volume-value">70%</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Create Playlist Modal -->
+    <div id="create-playlist-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Playlist</h2>
+                <button class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="playlist-name-input" placeholder="Playlist name...">
+                <textarea id="playlist-description-input" placeholder="Playlist description..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancel-playlist-btn">Cancel</button>
+                <button class="btn-primary" id="confirm-playlist-btn">Create</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<!-- CONVERT MODAL -->
-<div class="modal" id="convertModal">
-  <div class="modal-box">
-    <h3>Download opties</h3>
-
-    <select id="format">
-      <option value="mp3">MP3</option>
-      <option value="mp4">MP4</option>
-    </select>
-
-    <select id="targetFolder"></select>
-
-    <div class="row">
-      <button class="primary" onclick="doConvert()">Download</button>
-      <button class="secondary" onclick="closeModals()">Cancel</button>
+    <!-- Track Details Modal -->
+    <div id="track-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Track Details</h2>
+                <button class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body" id="track-details-body">
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-let folders = JSON.parse(localStorage.getItem('sv_folders')||'[]');
-let current = 0;
+    <!-- Artist Details Modal -->
+    <div id="artist-modal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Artist Details</h2>
+                <button class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body" id="artist-details-body">
+            </div>
+        </div>
+    </div>
 
-function save(){localStorage.setItem('sv_folders',JSON.stringify(folders))}
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal active">
+        <div class="modal-content modal-login">
+            <div class="login-container">
+                <div class="login-logo">
+                    <i class="fab fa-spotify"></i>
+                </div>
+                <h1>Spotify Player</h1>
+                <p>Connect with your Spotify account</p>
+                <button class="btn-primary btn-login" id="login-btn">
+                    <i class="fab fa-spotify"></i> Connect with Spotify
+                </button>
+                <p class="login-disclaimer">
+                    This app uses Spotify's Web API to display your music.
+                    Your data is never stored.
+                </p>
+            </div>
+        </div>
+    </div>
 
-function render(){
-  const f=document.getElementById('folders');
-  f.innerHTML='';
-
-  folders.forEach((x,i)=>{
-    const d=document.createElement('div');
-    d.className='folder'+(i===current?' active':'');
-    d.innerText=x.name;
-    d.onclick=()=>{current=i;render();load()};
-    f.appendChild(d);
-  });
-
-  load();
-}
-
-function load(){
-  if(!folders[current]) return;
-  document.getElementById('title').innerText=folders[current].name;
-
-  const list=document.getElementById('list');
-  list.innerHTML='';
-
-  folders[current].items.forEach(it=>{
-    const div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`${it.name}<a href="${it.url}" download>Download ${it.type}</a>`;
-    list.appendChild(div);
-  });
-}
-
-function openFolderModal(){
-  document.getElementById('folderModal').style.display='flex';
-}
-
-function createFolder(){
-  const name=document.getElementById('folderName').value;
-  if(!name) return;
-  folders.push({name,items:[]});
-  current=folders.length-1;
-  save();
-  closeModals();
-  render();
-}
-
-function openConvertModal(){
-  const select=document.getElementById('targetFolder');
-  select.innerHTML='';
-
-  folders.forEach((f,i)=>{
-    const o=document.createElement('option');
-    o.value=i;
-    o.textContent=f.name;
-    select.appendChild(o);
-  });
-
-  document.getElementById('convertModal').style.display='flex';
-}
-
-function doConvert(){
-  const input=document.getElementById('input').value;
-  if(!input) return alert('geen link');
-
-  const format=document.getElementById('format').value;
-  const folderIndex=document.getElementById('targetFolder').value;
-
-  const fakeUrl='https://example.com/file.'+format;
-
-  folders[folderIndex].items.push({
-    name:'Track '+(folders[folderIndex].items.length+1),
-    url:fakeUrl,
-    type:format
-  });
-
-  save();
-  closeModals();
-  render();
-}
-
-function closeModals(){
-  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
-}
-
-if(folders.length===0){folders.push({name:'Mijn muziek',items:[]});save()}
-render();
-</script>
-
+    <script src="app.js"></script>
 </body>
 </html>
